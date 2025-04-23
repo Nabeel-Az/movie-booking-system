@@ -1,42 +1,44 @@
-import { Link } from 'react-router-dom';
+import { useRouter } from '@tanstack/react-router';
 import { useAuth } from '../hooks/AuthContext';
 
-export const NavBar = () => {
-  const { user, logout } = useAuth();
+import NavLinks from './NavLink';
+import NavUserInfo from './NavUserInfo';
+
+const NavBar = () => {
+  const { userProfile, logout } = useAuth();
+  const router = useRouter();
+
+  const isUserProfileValid = userProfile?.userId?.trim() !== '';
+
+  const onLogout = () => {
+    if (window.confirm('Are you sure you want to logout?')) {
+      logout();
+      router.invalidate().finally(() => {
+        router.navigate({ to: '/logout' });
+      });
+    }
+  };
 
   return (
     <nav className="bg-blue-600 p-4 h-[56px]">
       <div className="flex justify-between items-center">
         <ul className="flex space-x-4">
-          {user && (
-            <>
-              <li>
-                <Link to="/home" className="text-white hover:text-gray-200 hover:underline">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/my-bookings" className="text-white hover:text-gray-200 hover:underline">
-                  My Bookings
-                </Link>
-              </li>
-            </>
-          )}
+            {isUserProfileValid && <NavLinks role={userProfile.role} />}
         </ul>
-        {user && (
-          <div className="flex items-center space-x-4">
-            <div className="text-white">
-              Welcome, {user.username}
-            </div>
+        {isUserProfileValid && (
+        <div className="flex items-center space-x-4"> 
+            <NavUserInfo name={userProfile.name} role={userProfile.role} />
             <button
-              onClick={logout}
-              className="text-white hover:text-red-700 hover:underline"
+                onClick={onLogout}
+                className="text-white hover:text-red-700 hover:underline"
             >
-              Logout
+                Logout
             </button>
-          </div>
+        </div>
         )}
       </div>
     </nav>
   );
 };
+
+export default NavBar;

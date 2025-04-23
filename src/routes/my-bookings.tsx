@@ -1,14 +1,12 @@
-import { useUserBookings } from '../hooks/UserBookingContext';
-import { MovieBookingTable } from '../components/MovieBookingTable';
-import { useEffect, useState } from 'react';
-import { Spinner } from '../components/Spinner';
-import { MovieDetails } from '../models/form-model';
-import { Modal } from '../components/Modal';
-import { MovieBookingForm } from '../components/MovieBookingForm';
+import { useEffect, useState } from "react";
+import { Spinner } from "../components/Spinner";
+import { MovieDetails } from "../models/form-model";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useMoviesStore } from "@/stores/movies-store";
 
 export const MyBookingsComponent = () => {
   const [loading, setLoading] = useState(true);
-  const { userBooking, movies, updateMovies, addUserBooking, setUserBooking} = useUserBookings();
+  // const { userBooking, addUserBooking, setUserBooking } = useUserBookings();
   const [selectedMovie, setSelectedMovie] = useState<MovieDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -17,7 +15,10 @@ export const MyBookingsComponent = () => {
       setLoading(false);
     }
   }, [userBooking]);
-  
+
+  const movies = useMoviesStore.get.movies();
+  const updateMovies = useMoviesStore.get.updateMovies();
+
   const handleUpdateBooking = (index: number) => {
     setSelectedMovie(userBooking[index]);
     setIsModalOpen(true);
@@ -27,15 +28,15 @@ export const MyBookingsComponent = () => {
     const bookedSeatsDifference = newBookedSeats - movie.bookedSeats;
     const updatedMovies = movies?.map((m) =>
       m.title === movie.title
-        ? { 
-            ...m, 
-            bookedSeats: newBookedSeats, 
-            availableSeats: m.availableSeats - bookedSeatsDifference 
+        ? {
+            ...m,
+            bookedSeats: newBookedSeats,
+            availableSeats: m.availableSeats - bookedSeatsDifference,
           }
         : m
     );
     updateMovies(updatedMovies ?? []);
-    addUserBooking({...movie, bookedSeats: bookedSeatsDifference});
+    addUserBooking({ ...movie, bookedSeats: bookedSeatsDifference });
     setIsModalOpen(false);
   };
 
@@ -45,10 +46,10 @@ export const MyBookingsComponent = () => {
     if (selectedMovie) {
       const updatedMovies = movies?.map((movie) =>
         movie.title === selectedMovie.title
-          ? { 
-              ...movie, 
-              availableSeats: movie.availableSeats + selectedMovie.bookedSeats, 
-              bookedSeats: 0 
+          ? {
+              ...movie,
+              availableSeats: movie.availableSeats + selectedMovie.bookedSeats,
+              bookedSeats: 0,
             }
           : movie
       );
@@ -60,30 +61,33 @@ export const MyBookingsComponent = () => {
   };
 
   const handleSubmitBooking = () => {
-      if(userBooking.length > 0) {
-        alert("Booking submitted successfully!");
-        setUserBooking([]);
-      }
-      else {
-        alert("Failed to submit booking. Please try again.");
-      }
+    if (userBooking.length > 0) {
+      alert("Booking submitted successfully!");
+      setUserBooking([]);
+    } else {
+      alert("Failed to submit booking. Please try again.");
+    }
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold">My Bookings</h1>
 
-      {loading && <Spinner />} 
+      {/* {loading && <Spinner />}
 
       {!loading && (
-      <MovieBookingTable
-        movies={userBooking}
-        onUpdate={handleUpdateBooking}
-        onDelete={handleCancelBooking}
-        onSubmit={handleSubmitBooking}
-      />
+        <MovieBookingTable
+          movies={userBooking}
+          onUpdate={handleUpdateBooking}
+          onDelete={handleCancelBooking}
+          onSubmit={handleSubmitBooking}
+        />
       )}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isUpdate={(selectedMovie?.bookedSeats ?? 0) > 0}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        isUpdate={(selectedMovie?.bookedSeats ?? 0) > 0}
+      >
         {selectedMovie && (
           <MovieBookingForm
             movie={selectedMovie}
@@ -92,7 +96,21 @@ export const MyBookingsComponent = () => {
             onCancel={() => setIsModalOpen(false)}
           />
         )}
-      </Modal>
+      </Modal> */}
     </div>
   );
 };
+
+export const Route = createFileRoute("/my-bookings")({
+  component: MyBookingsComponent,
+  beforeLoad: ({ context }) => {
+    // Check if the user token is set
+    if (!context.auth.userProfile.token) {
+      // Redirect to login if not authorized
+      throw redirect({
+        to: "/login",
+      });
+    }
+    return; // Allow access if authorized
+  },
+});

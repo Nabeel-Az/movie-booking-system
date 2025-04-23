@@ -1,45 +1,43 @@
-import { createContext, useState, useContext, ReactNode, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { UserProfile } from "@/models/stores/authentication-model";
+import { useAuthStore } from "@/stores/authentication-store";
+import { createContext, useContext, useMemo, useCallback } from "react";
 
-type AuthContextType = {
-  user: { username: string } | null;
-  login: (username: string) => void;
+export type AuthContextType = {
+  login: (userProfile: UserProfile) => void;
   logout: () => void;
+  userProfile: UserProfile;
 };
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<{ username: string } | null>(null);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const userProfile = useAuthStore.get.userProfile();
+  const setUserProfile = useAuthStore.get.setUserProfile();
+  const clearUserProfile = useAuthStore.get.clearUserProfile();
+  const login = useCallback(
+    (userProfile: UserProfile) => {
+      setUserProfile(userProfile);
+    },
+    [setUserProfile]
+  );
+  const logout = useCallback(() => {
+    clearUserProfile();
+  }, [clearUserProfile]);
 
-  const login = (username: string) => {
-    setUser({ username });
-  };
-
-  const logout = () => {
-    setUser(null);
-    navigate('/logout');
-  };
-
-  // Memoize the value to prevent unnecessary re-renders
-  const value = useMemo(() => ({
-    user,
-    login,
-    logout,
-  }), [user]); // Only re-run when `user` changes
+  const contextValue = useMemo(
+    () => ({ login, logout, userProfile }),
+    [login, logout, userProfile]
+  );
 
   return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

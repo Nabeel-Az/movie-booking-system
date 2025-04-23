@@ -1,38 +1,50 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { HomeComponent } from './routes/home';
-import { LoginComponent } from './routes/login-page';
-import { UserBookingContextProvider } from './hooks/UserBookingContext';
-import { AuthProvider } from './hooks/AuthContext';
-import { ErrorComponent } from './routes/error-page';
-import { MyBookingsComponent } from './routes/my-bookings';
-import { NavBar } from './components/NavBar';
-import LogoutComponent from './routes/logout';
-import ProtectedRoute from './components/ProtectedRoute'; // Import the ProtectedRoute component
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
+import { AuthProvider, useAuth } from "./hooks/AuthContext";
+import {
+  UserBookingContextProvider,
+  useUserBookings,
+} from "./hooks/UserBookingContext";
 
-export const App = () => {
+// Set up a Router instance
+const router = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  context: {
+    auth: undefined!,
+    userBooking: undefined!,
+  },
+});
+
+// Register things for typesafety
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+const rootElement = document.getElementById("app")!;
+const InnerApp = () => {
+  const auth = useAuth();
+  const userBooking = useUserBookings();
+  return <RouterProvider router={router} context={{ auth, userBooking }} />;
+};
+const App = () => {
   return (
-    <Router>
-      <AuthProvider>
-        <UserBookingContextProvider>
-          <NavBar />
-          <Routes>
-            <Route path="/" element={<LoginComponent />} />
-            <Route path="/home" element={<ProtectedRoute element={<HomeComponent />} />} />
-            <Route path="/my-bookings" element={<ProtectedRoute element={<MyBookingsComponent />} />} />
-            <Route path="/logout" element={<ProtectedRoute element={<LogoutComponent />} />} />
-            <Route path="*" element={<ErrorComponent />} />
-          </Routes>
-        </UserBookingContextProvider>
-      </AuthProvider>
-    </Router>
+    <AuthProvider>
+      <UserBookingContextProvider>
+        <InnerApp />
+      </UserBookingContextProvider>
+    </AuthProvider>
   );
 };
-
-const root = ReactDOM.createRoot(document.getElementById('app') as HTMLElement);
-root.render(
-  <React.StrictMode>   
-    <App />
-  </React.StrictMode>
-);
+if (!rootElement.innerHTML) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  );
+}
