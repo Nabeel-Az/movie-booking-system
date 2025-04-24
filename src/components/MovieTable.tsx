@@ -116,21 +116,21 @@ export const MovieTable: React.FC<MovieTableProps> = ({
   const showNoMoviesFound = !filteredData || filteredData.length === 0;
 
   return (
-    <div className="mt-15 ml-10">
-      <div className="flex flex-col gap-10">
+    <div className="mt-10 mx-10 lg:mx-20">
+      <div className="flex flex-col gap-8">
         {/* Filters Section */}
-        <div className="flex gap-4 mb-4">
+        <div className="flex gap-4 mb-6">
           <input
             type="text"
             placeholder="Search by Title"
             value={titleFilter}
             onChange={(e) => setTitleFilter(e.target.value)}
-            className="border px-2 py-1 rounded"
+            className="border px-4 py-3 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-lg"
           />
           <select
             value={ratingFilter}
             onChange={(e) => setRatingFilter(e.target.value)}
-            className="border px-2 py-1 rounded"
+            className="border px-4 py-3 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-lg"
           >
             <option value="">All Ratings</option>
             <option value="G">G - Kid Friendly</option>
@@ -142,7 +142,7 @@ export const MovieTable: React.FC<MovieTableProps> = ({
           <select
             value={showtimeFilter}
             onChange={(e) => setShowtimeFilter(e.target.value)}
-            className="border px-2 py-1 rounded"
+            className="border px-4 py-3 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 text-lg"
           >
             <option value="">All Showtimes</option>
             <option value="today">Today</option>
@@ -152,14 +152,14 @@ export const MovieTable: React.FC<MovieTableProps> = ({
         </div>
 
         {/* Table */}
-        <div>
-          <table className="w-full border border-gray-300">
-            <thead>
+        <div className="overflow-x-auto bg-white shadow-2xl rounded-lg">
+          <table className="w-full text-lg table-auto">
+            <thead className="bg-gray-200 text-gray-700">
               {movieTable.getHeaderGroups().map((headerGroup) => (
-                <tr className="bg-gray-100" key={headerGroup.id}>
+                <tr className="border-b border-gray-300" key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
-                      className="border border-gray-300 px-4 py-2 text-left"
+                      className="px-6 py-4 font-semibold text-lg text-gray-700 text-center"
                       key={header.id}
                     >
                       {header.isPlaceholder ? null : (
@@ -167,7 +167,7 @@ export const MovieTable: React.FC<MovieTableProps> = ({
                           {...{
                             onClick: header.column.getToggleSortingHandler(),
                             className: header.column.getCanSort()
-                              ? "cursor-pointer select-none"
+                              ? "cursor-pointer select-none text-indigo-600 hover:text-indigo-800"
                               : "",
                           }}
                         >
@@ -184,7 +184,7 @@ export const MovieTable: React.FC<MovieTableProps> = ({
                     </th>
                   ))}
                   {actions.length > 0 && (
-                    <th className="border border-gray-300 px-4 py-2 text-left">
+                    <th className="px-6 py-4 font-semibold text-lg text-gray-700 text-center">
                       Actions
                     </th>
                   )}
@@ -198,17 +198,20 @@ export const MovieTable: React.FC<MovieTableProps> = ({
                     colSpan={
                       (tableColumns?.length ?? 0) + (actions.length > 0 ? 1 : 0)
                     }
-                    className="border border-gray-300 px-4 py-2 text-center"
+                    className="px-6 py-4 text-center text-gray-500"
                   >
                     No Movies Found
                   </td>
                 </tr>
               ) : (
                 movieTable.getRowModel().rows.map((row) => (
-                  <tr key={row.id}>
+                  <tr
+                    key={row.id}
+                    className="border-b border-gray-300 hover:bg-gray-50"
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className="border border-gray-300 px-4 py-2"
+                        className="px-6 py-4 text-lg text-gray-700"
                         key={cell.id}
                       >
                         {flexRender(
@@ -218,7 +221,7 @@ export const MovieTable: React.FC<MovieTableProps> = ({
                       </td>
                     ))}
                     {actions.length > 0 && (
-                      <td className="border border-gray-300 px-4 py-2 text-center">
+                      <td className="px-6 py-4 text-center">
                         {actions.map((action, idx) => {
                           if (
                             action.label === "Book" ||
@@ -227,7 +230,7 @@ export const MovieTable: React.FC<MovieTableProps> = ({
                             return (
                               <div
                                 key={idx}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-4"
                               >
                                 <input
                                   type="number"
@@ -241,12 +244,12 @@ export const MovieTable: React.FC<MovieTableProps> = ({
                                     )
                                   }
                                   placeholder="Seats"
-                                  className="w-20 border rounded px-2 py-1"
+                                  className="w-24 border rounded-md px-4 py-2 text-lg shadow-sm"
                                 />
                                 <button
                                   className={
                                     action.className ||
-                                    "bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                                    "bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg shadow-md"
                                   }
                                   onClick={() =>
                                     action.onClick({
@@ -272,7 +275,7 @@ export const MovieTable: React.FC<MovieTableProps> = ({
                               key={idx}
                               className={
                                 action.className ||
-                                "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                                "bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg shadow-md"
                               }
                               onClick={() => action.onClick(row.original)}
                             >
@@ -289,17 +292,17 @@ export const MovieTable: React.FC<MovieTableProps> = ({
           </table>
         </div>
         {!showNoMoviesFound && showPagination && (
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-6">
             <div>
               <button
-                className="px-3 py-1 mr-2 bg-gray-200 rounded disabled:opacity-50"
+                className="px-6 py-3 mr-4 bg-gray-300 rounded-lg text-lg text-gray-700 hover:bg-gray-400 disabled:opacity-50"
                 onClick={() => movieTable.previousPage()}
                 disabled={!movieTable.getCanPreviousPage()}
               >
                 Previous
               </button>
               <button
-                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                className="px-6 py-3 bg-gray-300 rounded-lg text-lg text-gray-700 hover:bg-gray-400 disabled:opacity-50"
                 onClick={() => movieTable.nextPage()}
                 disabled={!movieTable.getCanNextPage()}
               >
@@ -320,7 +323,7 @@ export const MovieTable: React.FC<MovieTableProps> = ({
                   setPageSize(Number(e.target.value));
                   setPageIndex(0);
                 }}
-                className="border rounded px-2 py-1"
+                className="border px-6 py-3 rounded-lg text-lg"
               >
                 {[5, 10].map((size) => (
                   <option key={size} value={size}>

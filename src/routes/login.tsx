@@ -53,9 +53,9 @@ export const LoginComponent = () => {
   });
 
   return (
-    <div className="flex h-[100vh] flex-col items-center justify-center p-2">
+    <div className="flex h-screen items-center justify-center bg-gradient-to-r from-blue-400 to-purple-600 p-6">
       <form
-        className="mt-4 max-w-lg min-w-sm"
+        className="w-full max-w-sm bg-white rounded-lg shadow-lg p-8"
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -63,18 +63,20 @@ export const LoginComponent = () => {
         }}
       >
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Welcome to Movie Booking Management System
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Login</h2>
           <p className="text-lg text-gray-600 mb-8">
             Please log in to continue.
           </p>
         </div>
-        <div className="flex flex-col">
+
+        <div className="flex flex-col space-y-4">
           <loginForm.Field name="userId">
             {(field) => (
-              <div className="mb-3 flex flex-col">
-                <label htmlFor={field.name} className="block mb-1">
+              <div className="flex flex-col">
+                <label
+                  htmlFor={field.name}
+                  className="text-sm font-medium text-gray-700 mb-2"
+                >
                   User ID
                 </label>
                 <input
@@ -83,16 +85,20 @@ export const LoginComponent = () => {
                   onChange={(e) => {
                     field.handleChange(e.target.value);
                   }}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
               </div>
             )}
           </loginForm.Field>
+
           <loginForm.Field name="password">
             {(field) => (
-              <div className="mb-3 flex flex-col">
-                <label htmlFor={field.name} className="block mb-1">
+              <div className="flex flex-col">
+                <label
+                  htmlFor={field.name}
+                  className="text-sm font-medium text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <input
@@ -101,18 +107,19 @@ export const LoginComponent = () => {
                   onChange={(e) => {
                     field.handleChange(e.target.value);
                   }}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
               </div>
             )}
           </loginForm.Field>
         </div>
+
         <loginForm.Subscribe selector={(state) => [state.canSubmit]}>
           {([canSubmit]) => {
             return (
               <button
-                className="mt-5 w-full cursor-pointer rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300"
+                className="mt-5 w-full cursor-pointer rounded-lg bg-green-600 text-white px-5 py-2.5 text-sm font-medium hover:bg-green-700 focus:ring-4 focus:ring-green-300"
                 type="submit"
                 disabled={!canSubmit}
               >

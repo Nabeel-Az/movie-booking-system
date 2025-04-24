@@ -62,7 +62,7 @@ const AdminMoviesComponent = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-black-600 text-left mb-4">
+      <h1 className="text-3xl font-extrabold text-gray-700 text-center mb-8 tracking-tight drop-shadow">
         Admin Movie Creation
       </h1>
       {/* Create mode */}
