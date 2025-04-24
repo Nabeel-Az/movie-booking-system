@@ -3,6 +3,7 @@ import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import { nanoid } from "nanoid";
 import { MovieDetails } from "@/models/form-model";
+import ValidationError from "./ValidationError";
 
 const RATINGS = ["G", "PG", "PG-13", "R", "NC-17"];
 
@@ -22,7 +23,7 @@ export const MovieMultiStepForm = ({
       id: initialValues?.id || nanoid(5),
       title: initialValues?.title || "",
       description: initialValues?.description || "",
-      rating: initialValues?.rating || RATINGS[0],
+      rating: initialValues?.rating || "",
       showtime: initialValues?.showtime || "",
       availableSeats: 50,
       bookedSeats: 0,
@@ -32,7 +33,6 @@ export const MovieMultiStepForm = ({
     },
   });
 
-  console.log(initialValues?.showtime);
   return (
     <form
       onSubmit={form.handleSubmit}
@@ -51,10 +51,16 @@ export const MovieMultiStepForm = ({
                   type="text"
                   name="title"
                   value={field.state.value}
+                  onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   placeholder="Movie Title"
                   className="input input-bordered w-full mb-2"
                   required
+                />
+                <ValidationError
+                  isTouched={field.state.meta.isTouched}
+                  value={field.state.value}
+                  errorMessage="Title is required"
                 />
               </div>
             )}
@@ -69,10 +75,16 @@ export const MovieMultiStepForm = ({
                   type="text"
                   name="description"
                   value={field.state.value}
+                  onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   placeholder="Description"
                   className="input input-bordered w-full mb-2"
                   required
+                />
+                <ValidationError
+                  isTouched={field.state.meta.isTouched}
+                  value={field.state.value}
+                  errorMessage="Description is required"
                 />
               </div>
             )}
@@ -85,29 +97,51 @@ export const MovieMultiStepForm = ({
                 </label>
                 <select
                   name="rating"
-                  value={field.state.value}
+                  value={field.state.value || ""}
                   onChange={(e) => field.handleChange(e.target.value)}
                   className="input input-bordered w-full mb-2"
                   required
                 >
+                  <option value="">Select a rating</option>
                   {RATINGS.map((r) => (
                     <option key={r} value={r}>
                       {r}
                     </option>
                   ))}
                 </select>
+                <ValidationError
+                  isTouched={field.state.meta.isTouched}
+                  value={field.state.value}
+                  errorMessage="Rating is required"
+                />
               </div>
             )}
           </form.Field>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="text-lg bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-medium shadow-md transition duration-300"
-              onClick={() => setStep(1)}
-            >
-              Next
-            </button>
-          </div>
+
+          <form.Subscribe
+            selector={(state) => ({
+              title: state.values.title,
+              description: state.values.description,
+              rating: state.values.rating,
+            })}
+          >
+            {({ title, description, rating }) => (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  className={
+                    !title || !description || !rating
+                      ? "text-lg bg-gray-500 text-white px-6 py-3 rounded-full font-medium shadow-md transition duration-300"
+                      : "text-lg bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-medium shadow-md transition duration-300"
+                  }
+                  onClick={() => setStep(1)}
+                  disabled={!title || !description || !rating}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </form.Subscribe>
         </div>
       )}
       {step === 1 && (
@@ -128,25 +162,43 @@ export const MovieMultiStepForm = ({
                   className="input input-bordered w-full mb-2"
                   required
                 />
+                <ValidationError
+                  isTouched={field.state.meta.isTouched}
+                  value={field.state.value}
+                  errorMessage="Showtime is required"
+                />
               </div>
             )}
           </form.Field>
-          <div className="flex justify-between">
-            <button
-              type="button"
-              className="text-lg bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium shadow-md transition duration-300"
-              onClick={() => setStep(0)}
-            >
-              Back
-            </button>
-            <button
-              type="button"
-              className="text-lg bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-medium shadow-md transition duration-300"
-              onClick={() => setStep(2)}
-            >
-              Next
-            </button>
-          </div>
+          <form.Subscribe
+            selector={(state) => ({
+              showtime: state.values.showtime,
+            })}
+          >
+            {({ showtime }) => (
+              <div className="flex justify-between">
+                <button
+                  type="button"
+                  className="text-lg bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full font-medium shadow-md transition duration-300"
+                  onClick={() => setStep(0)}
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  className={
+                    !showtime
+                      ? "text-lg bg-gray-500 text-white px-6 py-3 rounded-full font-medium shadow-md transition duration-300"
+                      : "text-lg bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-full font-medium shadow-md transition duration-300"
+                  }
+                  onClick={() => setStep(2)}
+                  disabled={!showtime}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </form.Subscribe>
         </div>
       )}
       {step === 2 && (

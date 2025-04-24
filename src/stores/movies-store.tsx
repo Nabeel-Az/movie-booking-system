@@ -10,7 +10,6 @@ export const useMoviesStoreBase = create<MoviesStoreBase>()((set) => ({
   movies: [] as MovieDetails[],
   userBooking: [] as MovieDetails[],
   updateMovies: (movies: MovieDetails[]) => set(() => ({ movies })),
-  // addUserBooking: (movieBooking: MovieDetails) => set(() => ({ userBooking })),
 }));
 
 export const useAdminMoviesStoreBase = create<MoviesAdminStoreBase>()(

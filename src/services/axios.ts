@@ -30,6 +30,6 @@ export const putRequest = <T>(URL: string, payload: any): Promise<T> => {
 
 export const deleteRequest = <T>(URL: string, payload: any): Promise<T> => {
   return axiosClient
-    .delete<T>(`/${URL}`, payload)
+    .delete<T>(`/${URL}?id=${encodeURIComponent(payload)}`)
     .then((response) => response.data);
 };

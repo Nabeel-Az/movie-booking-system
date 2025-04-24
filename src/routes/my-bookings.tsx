@@ -1,102 +1,111 @@
-import { useEffect, useState } from "react";
 import { Spinner } from "../components/Spinner";
 import { MovieDetails } from "../models/form-model";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useMoviesStore } from "@/stores/movies-store";
+import {
+  deleteMovieBooking,
+  getMyBookings,
+  updateMovieBooking,
+} from "@/services/user-service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { formatShowtime } from "@/stores/utility";
+import { MovieTable } from "@/components/MovieTable";
 
 export const MyBookingsComponent = () => {
-  const [loading, setLoading] = useState(true);
-  // const { userBooking, addUserBooking, setUserBooking } = useUserBookings();
-  const [selectedMovie, setSelectedMovie] = useState<MovieDetails | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { isFetching: loading, data: moviesData } = useQuery({
+    queryKey: ["getMyBookingsData"],
+    queryFn: async () => {
+      const moviesData = await getMyBookings();
 
-  useEffect(() => {
-    if (userBooking) {
-      setLoading(false);
-    }
-  }, [userBooking]);
+      return moviesData || [];
+    },
+  });
 
-  const movies = useMoviesStore.get.movies();
-  const updateMovies = useMoviesStore.get.updateMovies();
+  const updateMovieMutation = useMutation({
+    mutationFn: (updateBooking: MovieDetails) => {
+      return updateMovieBooking(updateBooking);
+    },
+    onSuccess: (response) => {
+      alert("Movie booking updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["getMyBookingsData"] });
+      return response;
+    },
+  });
 
-  const handleUpdateBooking = (index: number) => {
-    setSelectedMovie(userBooking[index]);
-    setIsModalOpen(true);
+  const deleteMovieMutation = useMutation({
+    mutationFn: (deleteBooking: MovieDetails) => {
+      return deleteMovieBooking(deleteBooking.id);
+    },
+    onSuccess: (response) => {
+      alert("Movie booking deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["getMyBookingsData"] });
+      return response;
+    },
+  });
+
+  const handleUpdateBooking = (values: MovieDetails) => {
+    updateMovieMutation.mutate(values);
   };
 
-  const handleSaveBooking = (movie: MovieDetails, newBookedSeats: number) => {
-    const bookedSeatsDifference = newBookedSeats - movie.bookedSeats;
-    const updatedMovies = movies?.map((m) =>
-      m.title === movie.title
-        ? {
-            ...m,
-            bookedSeats: newBookedSeats,
-            availableSeats: m.availableSeats - bookedSeatsDifference,
-          }
-        : m
-    );
-    updateMovies(updatedMovies ?? []);
-    addUserBooking({ ...movie, bookedSeats: bookedSeatsDifference });
-    setIsModalOpen(false);
+  const handleDeleteBooking = (values: MovieDetails) => {
+    deleteMovieMutation.mutate(values);
   };
 
-  const handleCancelBooking = (index: number) => {
-    const selectedMovie = userBooking[index];
-
-    if (selectedMovie) {
-      const updatedMovies = movies?.map((movie) =>
-        movie.title === selectedMovie.title
-          ? {
-              ...movie,
-              availableSeats: movie.availableSeats + selectedMovie.bookedSeats,
-              bookedSeats: 0,
-            }
-          : movie
-      );
-      updateMovies(updatedMovies ?? []);
-      setUserBooking((prevUserBooking) =>
-        prevUserBooking.filter((_, idx) => idx !== index)
-      );
-    }
-  };
-
-  const handleSubmitBooking = () => {
-    if (userBooking.length > 0) {
-      alert("Booking submitted successfully!");
-      setUserBooking([]);
-    } else {
-      alert("Failed to submit booking. Please try again.");
-    }
-  };
+  const movieKeyList = [
+    {
+      accessorKey: "title",
+      header: "Title",
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+    },
+    {
+      accessorKey: "rating",
+      header: "Rating",
+    },
+    {
+      accessorKey: "showtime",
+      header: "Showtime",
+      cell: ({ row }: { row: { original: MovieDetails } }) =>
+        formatShowtime(row.original.showtime),
+    },
+    {
+      accessorKey: "bookedSeats",
+      header: "Booked Seats",
+    },
+  ];
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold">My Bookings</h1>
-
-      {/* {loading && <Spinner />}
-
+      <h1 className="text-3xl font-bold text-black-600 text-left mb-4">
+        My Bookings
+      </h1>
+      {loading && <Spinner />}
       {!loading && (
-        <MovieBookingTable
-          movies={userBooking}
-          onUpdate={handleUpdateBooking}
-          onDelete={handleCancelBooking}
-          onSubmit={handleSubmitBooking}
-        />
-      )}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        isUpdate={(selectedMovie?.bookedSeats ?? 0) > 0}
-      >
-        {selectedMovie && (
-          <MovieBookingForm
-            movie={selectedMovie}
-            bookedSeats={selectedMovie.bookedSeats}
-            onSave={(newSeats) => handleSaveBooking(selectedMovie, newSeats)}
-            onCancel={() => setIsModalOpen(false)}
+        <div>
+          <MovieTable
+            tableData={moviesData}
+            tableColumns={movieKeyList}
+            showPagination={true}
+            actions={[
+              {
+                label: "Update",
+                onClick: handleUpdateBooking,
+                className:
+                  "bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded",
+              },
+              {
+                label: "Delete",
+                onClick: handleDeleteBooking,
+                className:
+                  "bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded",
+              },
+            ]}
           />
-        )}
-      </Modal> */}
+        </div>
+      )}
     </div>
   );
 };

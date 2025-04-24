@@ -15,7 +15,6 @@ import { Route as MyBookingsImport } from './routes/my-bookings'
 import { Route as LogoutImport } from './routes/logout'
 import { Route as LoginImport } from './routes/login'
 import { Route as HomeImport } from './routes/home'
-import { Route as ErrorPageImport } from './routes/error-page'
 import { Route as IndexImport } from './routes/index'
 import { Route as AdminIndexImport } from './routes/admin/index'
 import { Route as AdminMoviesImport } from './routes/admin/movies'
@@ -46,12 +45,6 @@ const HomeRoute = HomeImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ErrorPageRoute = ErrorPageImport.update({
-  id: '/error-page',
-  path: '/error-page',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
@@ -79,13 +72,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/error-page': {
-      id: '/error-page'
-      path: '/error-page'
-      fullPath: '/error-page'
-      preLoaderRoute: typeof ErrorPageImport
       parentRoute: typeof rootRoute
     }
     '/home': {
@@ -137,7 +123,6 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/error-page': typeof ErrorPageRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
@@ -148,7 +133,6 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/error-page': typeof ErrorPageRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
@@ -160,7 +144,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/error-page': typeof ErrorPageRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
@@ -173,7 +156,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/error-page'
     | '/home'
     | '/login'
     | '/logout'
@@ -183,7 +165,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/error-page'
     | '/home'
     | '/login'
     | '/logout'
@@ -193,7 +174,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/error-page'
     | '/home'
     | '/login'
     | '/logout'
@@ -205,7 +185,6 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ErrorPageRoute: typeof ErrorPageRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
@@ -216,7 +195,6 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ErrorPageRoute: ErrorPageRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
@@ -236,7 +214,6 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/error-page",
         "/home",
         "/login",
         "/logout",
@@ -247,9 +224,6 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
-    },
-    "/error-page": {
-      "filePath": "error-page.tsx"
     },
     "/home": {
       "filePath": "home.tsx"

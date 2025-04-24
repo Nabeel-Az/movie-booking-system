@@ -1,6 +1,10 @@
 import { MovieMultiStepForm } from "@/components/MovieMultiStepForm";
 import { MovieDetails } from "@/models/form-model";
-import { addAdminMovie, deleteAdminMovie, updateAdminMovie } from "@/services/admin-service";
+import {
+  addAdminMovie,
+  deleteAdminMovie,
+  updateAdminMovie,
+} from "@/services/admin-service";
 import { useAdminMoviesStore } from "@/stores/movies-store";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -21,7 +25,6 @@ const AdminMoviesComponent = () => {
 
   const updateMovieMutation = useMutation({
     mutationFn: (movieCreated: MovieDetails) => {
-      console.log(movieCreated);
       return updateAdminMovie({
         match: { id: movieCreated.id },
         ...movieCreated,
@@ -36,7 +39,6 @@ const AdminMoviesComponent = () => {
 
   const deleteMovieMutation = useMutation({
     mutationFn: (movieId: string) => {
-      console.log(movieId);
       return deleteAdminMovie(movieId);
     },
     onSuccess: (response) => {
@@ -58,11 +60,10 @@ const AdminMoviesComponent = () => {
     deleteMovieMutation.mutate(movieId);
   };
 
-  console.log(editAdminMovie);
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-black-600 text-center mb-4">
-        Movie Booking Management System
+      <h1 className="text-3xl font-bold text-black-600 text-left mb-4">
+        Admin Movie Creation
       </h1>
       {/* Create mode */}
       {(!editAdminMovie || Object.keys(editAdminMovie).length === 0) && (

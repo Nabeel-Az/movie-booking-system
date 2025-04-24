@@ -53,16 +53,16 @@ export const updateMovieBooking = async (
 };
 
 export const deleteMovieBooking = async (
-  bookingId: string
+  deleteBookingId: string
 ): Promise<ApiResponseBase> => {
   try {
     const response = await deleteRequest<ApiResponseBase>(
       "api/deleteBooking",
-      bookingId
+      deleteBookingId
     );
     return response;
   } catch (error) {
-    console.error("Error deleting movie booking:", error);
+    console.error("Error deleting movie:", error);
     throw error;
   }
 };

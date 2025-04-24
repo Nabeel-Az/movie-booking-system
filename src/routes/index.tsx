@@ -6,10 +6,10 @@ export const Route = createFileRoute("/")({
     const { userProfile } = auth;
 
     // Check if the user token is set and has the 'admin' role
-    if (!context.auth.userProfile.token || userProfile.role !== 'admin') {
+    if (!context.auth.userProfile.token || userProfile.role !== "admin") {
       // Redirect to appropriate page based on user role
       throw redirect({
-        to: userProfile.role === 'user' ? "/home" : "/login",
+        to: userProfile.role === "user" ? "/home" : "/login",
       });
     }
     return; // Allow access if authorized
