@@ -271,16 +271,21 @@ export const MovieTable: React.FC<MovieTableProps> = ({
                             );
                           }
                           return (
-                            <button
+                            <div
                               key={idx}
-                              className={
-                                action.className ||
-                                "bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg shadow-md"
-                              }
-                              onClick={() => action.onClick(row.original)}
+                              className="flex items-center justify-center gap-4 py-3"
                             >
-                              {action.label}
-                            </button>
+                              <button
+                                key={idx}
+                                className={
+                                  action.className ||
+                                  "bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg shadow-md"
+                                }
+                                onClick={() => action.onClick(row.original)}
+                              >
+                                {action.label}
+                              </button>
+                            </div>
                           );
                         })}
                       </td>
