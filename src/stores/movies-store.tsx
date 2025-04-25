@@ -3,14 +3,8 @@ import { create } from "zustand";
 import { createSelectors } from "./utility";
 import {
   MoviesAdminStoreBase,
-  MoviesStoreBase,
+  // MoviesStoreBase,
 } from "@/models/stores/movies-model";
-
-export const useMoviesStoreBase = create<MoviesStoreBase>()((set) => ({
-  movies: [] as MovieDetails[],
-  userBooking: [] as MovieDetails[],
-  updateMovies: (movies: MovieDetails[]) => set(() => ({ movies })),
-}));
 
 export const useAdminMoviesStoreBase = create<MoviesAdminStoreBase>()(
   (set) => ({
@@ -20,5 +14,4 @@ export const useAdminMoviesStoreBase = create<MoviesAdminStoreBase>()(
   })
 );
 
-export const useMoviesStore = createSelectors(useMoviesStoreBase);
 export const useAdminMoviesStore = createSelectors(useAdminMoviesStoreBase);

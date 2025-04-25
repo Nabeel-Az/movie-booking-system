@@ -37,6 +37,14 @@ const NavLinks = ({ role }: { role: string }) => {
         </li>
         <li>
           <Link
+            to="/admin/movies"
+            className="text-white hover:text-gray-200 hover:underline"
+          >
+            Movie Creation
+          </Link>
+        </li>
+        <li>
+          <Link
             to="/home"
             className="text-white hover:text-gray-200 hover:underline align"
           >
@@ -49,14 +57,6 @@ const NavLinks = ({ role }: { role: string }) => {
             className="text-white hover:text-gray-200 hover:underline"
           >
             My Bookings
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/admin/movies"
-            className="text-white hover:text-gray-200 hover:underline"
-          >
-            Movie Creation
           </Link>
         </li>
       </>
