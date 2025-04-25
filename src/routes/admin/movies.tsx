@@ -7,7 +7,7 @@ import {
 } from "@/services/admin-service";
 import { useAdminMoviesStore } from "@/stores/movies-store";
 import { useMutation } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 const AdminMoviesComponent = () => {
   const editAdminMovie = useAdminMoviesStore.get.editAdminMovie();
@@ -85,4 +85,17 @@ const AdminMoviesComponent = () => {
 
 export const Route = createFileRoute("/admin/movies")({
   component: AdminMoviesComponent,
+  beforeLoad: ({ context }) => {
+    const { auth } = context;
+    const { userProfile } = auth;
+
+    // Check if the user token is set and has the 'admin' role
+    if (!context.auth.userProfile.token || userProfile.role !== "admin") {
+      // Redirect to appropriate page based on user role
+      throw redirect({
+        to: userProfile.role === "user" ? "/home" : "/login",
+      });
+    }
+    return;
+  },
 });
